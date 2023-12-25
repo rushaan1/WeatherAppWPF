@@ -17,6 +17,7 @@ using System.IO;
 using System.Device.Location;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Threading;
 
 namespace WeatherApp
 {
@@ -32,16 +33,14 @@ namespace WeatherApp
         private int maxTemp;
         private int currentTemp;
         private int feelsLike;
+        private bool refreshing = false;
         public MainWindow()
         {
-            Trace.WriteLine("wus good");
             InitializeComponent();
             watcher = new GeoCoordinateWatcher(GeoPositionAccuracy.Default);
-            if (!setWeatherData)
-            {
-                watcher.PositionChanged += SettingWeatherData;
-                watcher.TryStart(false, TimeSpan.FromSeconds(20));
-            }
+            watcher.PositionChanged += SettingWeatherData;
+            watcher.TryStart(false, TimeSpan.FromSeconds(3));
+            
         }
 
         string GetOpenWeatherUrl(double lat, double lon, string unit)
@@ -84,6 +83,35 @@ namespace WeatherApp
         {
             double f = (c * 9.0) / 5.0 + 32.0;
             return Convert.ToInt32(f); 
+        }
+
+        private void Refresh(object sender, RoutedEventArgs e) 
+        {
+            if (refreshing) 
+            {
+                return;
+            }
+            refreshing = true;
+            watcher.PositionChanged += SettingWeatherData;
+
+            Thread thread = new Thread(RefreshThread);
+            thread.Start();
+        }
+
+        private void RefreshThread() 
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                refreshIcon.Visibility = Visibility.Hidden;
+                refreshGif.Visibility = Visibility.Visible;
+            });
+            Thread.Sleep(5000);
+            this.Dispatcher.Invoke(() =>
+            {
+                refreshIcon.Visibility = Visibility.Visible;
+                refreshGif.Visibility = Visibility.Hidden; 
+            });
+            refreshing = false;
         }
 
         private void Celsius(object sender, RoutedEventArgs e)
@@ -203,7 +231,7 @@ namespace WeatherApp
                     }
                 }
             }
-            this.setWeatherData = true;
+            watcher.PositionChanged -= SettingWeatherData;
         }
     }
 }

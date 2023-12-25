@@ -3,14 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         xmlns:local="clr-namespace:WeatherApp"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Border Background="SkyBlue">
         <Viewbox>
             <Canvas Width="843" Height="450">
-                <Label Name="temperature" FontSize="79" Canvas.Left="442" Canvas.Top="103">102°C</Label>
-                <Label Name="feelslike" FontSize="25" Canvas.Left="457" Canvas.Top="195">Feels Like</Label>
+                <Label Name="temperature" FontSize="79" Canvas.Left="451" Canvas.Top="90">27°C</Label>
+                <Label Name="feelslike" FontSize="25" Canvas.Left="459" Canvas.Top="181">Feels Like</Label>
                 <Label Name="min" FontSize="15" Canvas.Left="365" Canvas.Top="174" RenderTransformOrigin="0.51,0.475">Min 103°C</Label>
                 <Label Name="max" FontSize="15" Canvas.Left="365" Canvas.Top="119">Max 103°C</Label>
 
@@ -26,6 +27,10 @@
                 <Button Click="Celsius" FontSize="17" BorderBrush="Transparent" Background="Transparent" Canvas.Left="358" Canvas.Top="10" Width="60" Height="27" >°C</Button>
                 <Button Click="Faren" FontSize="17" BorderBrush="Transparent" Background="Transparent" Canvas.Left="418" Canvas.Top="10" Width="52" Height="27" >°F</Button>
 
+                <Button Click="Refresh" FontSize="17" BorderBrush="Transparent" Background="Transparent" Canvas.Left="10" Canvas.Top="10" Width="44" Height="38" >
+                    <Image x:Name="refreshIcon" Visibility="Visible" Source="/Images/refreshicon.png"></Image>
+                </Button>
+                <Image Visibility="Hidden" x:Name="refreshGif" Width="50" Height="50" gif:AnimationBehavior.SourceUri="/Images/loading.gif" Canvas.Left="7" Canvas.Top="4" />
             </Canvas>
         </Viewbox>
     </Border>
