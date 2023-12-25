@@ -95,13 +95,22 @@ namespace WeatherApp
             
             Button btn = new Button() { Content = text }; 
             btn.Click += SearchButtonClick;
-            btn.Height = 21;
-            btn.Width = 153;
+            btn.Height = 37;
+            btn.Width = 274;
             btn.Background = Brushes.Snow;
+            btn.FontSize = 26;
+            if (text.Length > 18) 
+            {
+                btn.FontSize = 16;
+            }
+            if (text.Length > 28) 
+            {
+                btn.FontSize = 13;
+            }
             mainCanvas.Children.Add(btn);
             searchButtons.Add(btn);
-            Canvas.SetTop(btn, 69 + (21*searchItems));
-            Canvas.SetLeft(btn, 643);
+            Canvas.SetTop(btn, 66 + (37*searchItems));
+            Canvas.SetLeft(btn, 559);
             searchItems++;
         }
 
@@ -117,7 +126,8 @@ namespace WeatherApp
 
         private void SearchButtonClick(object sender, RoutedEventArgs e) 
         {
-            Trace.WriteLine("Working");
+            SetWeatherDataCity((e.Source as Button).Content.ToString());
+            searchBar.Text = "";
         }
 
         private void Search(object sender, RoutedEventArgs e) 
@@ -127,9 +137,14 @@ namespace WeatherApp
             string searchText = (sender as TextBox).Text;
             List<string> matchingKeywords = new List<string>();
 
-            if (searchText == "") 
+            if (searchText == "")
             {
+                //sc.Visibility = Visibility.Visible;
                 return;
+            }
+            else 
+            {
+                //sc.Visibility = Visibility.Hidden;
             }
 
             for (int i = 0; i < cities.Count; i++) 
@@ -158,13 +173,22 @@ namespace WeatherApp
                 {
                     if (cities[j].Contains(matchingKeywords[i]))
                     {
-                        Trace.WriteLine(countries[j]);
                         AddButton($"{cities[j]}, {countries[j]}");
                         break; 
                     }
                     else if (countries[j].Contains(matchingKeywords[i]))
                     {
-                        Trace.WriteLine(countries[j]);
+                        foreach (string city in cities)
+                                {
+                                    if (countries[cities.IndexOf(city)] == countries[j]) 
+                                    {
+                                matchingKeywords.RemoveAll((string item) => { return item == countries[j]; });
+                                if (matchingKeywords.Contains(city) == false) 
+                                {
+                                    matchingKeywords.Add(city);
+                                }
+                                    }
+                                }
                         AddButton($"{cities[j]}, {countries[j]}");
                         break;
                     }
@@ -275,6 +299,110 @@ namespace WeatherApp
             }
             tempUnit = 'F';
             Canvas.SetLeft(snowOverlay, 411);
+        }
+
+        private double[] latlong(string city)
+        {
+            double[] latlongs = { 0.00, 0.00 };
+            string Response = Get($"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid=bc0dc3b2b3b5fca1427a621c5cd66b44");
+            JsonTextReader reader = new JsonTextReader(new StringReader(Response));
+            bool latlongset = false;
+            while (reader.Read())
+            {
+                if (reader.Value != null)
+                {
+                    if (reader.Value.Equals("lat") && !latlongset) 
+                    {
+                        reader.Read();
+                        latlongs[0] = (double) reader.Value;
+                    }
+                    if (reader.Value.Equals("lon") && !latlongset)
+                    {
+                        reader.Read();
+                        latlongs[1] = (double)reader.Value;
+                        latlongset = true;
+                    }
+                }
+            }
+            return latlongs;
+        }
+
+        private void SetWeatherDataCity(string cityName) 
+        {
+            double[] latlongss = latlong(cityName);
+            string Response = Get(GetOpenWeatherUrl(latlongss[0], latlongss[1], "metric"));
+            Trace.WriteLine(Response); 
+            JsonTextReader reader = new JsonTextReader(new StringReader(Response));
+            bool mainSet = false;
+            while (reader.Read())
+            {
+                if (reader.Value != null)
+                {
+                    if (reader.Value.Equals("temp"))
+                    {
+                        reader.Read();
+                        double temp = (double)reader.Value;
+                        int tempInt = Convert.ToInt32(temp);
+                        currentTemp = convert(tempInt);
+                        this.Dispatcher.Invoke(() => { temperature.Content = convert(tempInt) + "°C"; });
+                    }
+                    if (reader.Value.Equals("main") && !mainSet)
+                    {
+                        reader.Read();
+                        weather.Content = (string)reader.Value;
+                        mainSet = true;
+                        SetBackground((string)reader.Value);
+                    }
+                    if (reader.Value.Equals("feels_like"))
+                    {
+                        reader.Read();
+                        double fl = (double)reader.Value;
+                        this.feelsLike = convert(Convert.ToInt32(fl));
+                        feelslike.Content = "Feels Like " + convert(Convert.ToInt32(fl)) + "°C";
+                    }
+                    if (reader.Value.Equals("temp_min"))
+                    {
+                        reader.Read();
+                        double mint = (double)reader.Value;
+                        this.minTemp = convert(Convert.ToInt32(mint));
+                        min.Content = "Min " + convert(Convert.ToInt32(mint)) + "°C";
+                    }
+                    if (reader.Value.Equals("temp_max"))
+                    {
+                        reader.Read();
+                        double maxt = (double)reader.Value;
+                        this.maxTemp = convert(Convert.ToInt32(maxt));
+                        max.Content = "Max " + convert(Convert.ToInt32(maxt)) + "°C";
+                    }
+
+
+                    if (reader.Value.Equals("pressure"))
+                    {
+                        reader.Read();
+                        Trace.WriteLine(reader.Value);
+                        //int v = (int)reader.Value;
+                        presssure.Content = "Air Pressure: " + reader.Value;
+                    }
+                    if (reader.Value.Equals("humidity"))
+                    {
+                        reader.Read();
+                        //int v = (int)reader.Value;
+                        humidity.Content = "Humidity: " + reader.Value + "%";
+                    }
+                    if (reader.Value.Equals("visibility"))
+                    {
+                        reader.Read();
+                        //int v = (int)reader.Value;
+                        visibility.Content = "Visibility: " + reader.Value + "m";
+                    }
+                    if (reader.Value.Equals("speed"))
+                    {
+                        reader.Read();
+                        //double v = (double)reader.Value;
+                        wspeed.Content = "Wind Speed: " + reader.Value + "m/s";
+                    }
+                }
+            }
         }
 
         private void SettingWeatherData(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)

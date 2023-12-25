@@ -136,6 +136,8 @@
     <Resource Include="Images\snow.gif" />
     <Resource Include="Images\thunderstorm.gif" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\searchIcon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

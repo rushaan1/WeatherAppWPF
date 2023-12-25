@@ -20,6 +20,7 @@
         </Border.Background>
         <Viewbox>
             <Canvas x:Name="mainCanvas" Width="843" Height="450">
+
                 <Rectangle Opacity="0.7" RadiusX="15" RadiusY="15" Fill="Snow" Width="235" Height="145" Canvas.Top="223"/>
                 <Label  Name="temperature" FontFamily="Courier New" FontSize="79" Canvas.Left="451" Canvas.Top="90">27°C</Label>
                 <Label Name="feelslike" FontSize="25" Canvas.Left="459" Canvas.Top="181">Feels Like</Label>
@@ -42,8 +43,38 @@
                     <Image x:Name="refreshIcon" Visibility="Visible" Source="/Images/refreshicon.png"></Image>
                 </Button>
                 <Image Visibility="Hidden" x:Name="refreshGif" Width="50" Height="50" gif:AnimationBehavior.SourceUri="/Images/loading.gif" Canvas.Left="7" Canvas.Top="4" />
-                <TextBox TextChanged="Search" Width="153" Height="28" Canvas.Left="643" Canvas.Top="41"></TextBox>
-                <!--<Button x:Name="no1" Background="Snow" Canvas.Left="643" Canvas.Top="69" Height="21" Width="153">City</Button>-->
+
+                <TextBox x:Name="searchBar" BorderBrush="Transparent" FontSize="32.5" TextChanged="Search" Width="236" Height="46" Canvas.Left="597" Canvas.Top="21">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                            <Style.Resources>
+                                <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                    <VisualBrush.Visual>
+                                        <Label FontSize="30" Content="Search City" Foreground="LightGray" />
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Style.Resources>
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                </Trigger>
+                                <Trigger Property="Text" Value="{x:Null}">
+                                    <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter Property="Background" Value="White" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <!--<Label Name="sc" Opacity="0.3" FontSize="33" Width="236" Height="58" Canvas.Left="597" Canvas.Top="16">Search City</Label>-->
+                <Rectangle Stroke="Black" Width="274" Height="46" Canvas.Left="560" Canvas.Top="21" />
+                <!--<Button FontSize="20" x:Name="no1" Background="Snow" Canvas.Left="559" Canvas.Top="66" Height="37" Width="274">City</Button>
+                <Button FontSize="20" x:Name="nof1" Background="Snow" Canvas.Left="559" Canvas.Top="103" Height="37" Width="274">City</Button>-->
+                <Button BorderBrush="Transparent" Background="Transparent" Width="39" Height="46" Canvas.Left="560" Canvas.Top="21" RenderTransformOrigin="-0.195,0.492" >
+                    <Image Source="/Images/searchIcon.png" Width="30" Height="30"></Image>
+                </Button>
             </Canvas>
         </Viewbox>
     </Border>
