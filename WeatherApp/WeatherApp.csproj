@@ -108,5 +108,12 @@
   <ItemGroup>
     <Resource Include="Images\refreshicon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\clearsky.gif" />
+    <Resource Include="Images\clouds.gif" />
+    <Resource Include="Images\rain.gif" />
+    <Resource Include="Images\snow.gif" />
+    <Resource Include="Images\thunderstorm.gif" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

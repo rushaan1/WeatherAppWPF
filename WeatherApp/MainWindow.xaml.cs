@@ -18,6 +18,7 @@ using System.Device.Location;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Threading;
+using XamlAnimatedGif;
 
 namespace WeatherApp
 {
@@ -27,7 +28,6 @@ namespace WeatherApp
     public partial class MainWindow : Window
     {
         private GeoCoordinateWatcher watcher;
-        private bool setWeatherData = false;
         private char tempUnit = 'C';
         private int minTemp;
         private int maxTemp;
@@ -71,6 +71,33 @@ namespace WeatherApp
                 value = ToF(celsius);
             }
             return value;
+        }
+
+        void SetBackground(string weather) 
+        {
+            switch (weather)
+            {
+                case "Clear":
+                    Uri uri = new Uri("/Images/clearsky.gif", UriKind.Relative);
+                    AnimationBehavior.SetSourceUri(bg, uri);
+                    break;
+                case "Snow":
+                    Uri uri1 = new Uri("/Images/snow.gif", UriKind.Relative);
+                    AnimationBehavior.SetSourceUri(bg, uri1);
+                    break;
+                case "Rain":
+                    Uri uri2 = new Uri("/Images/rain.gif", UriKind.Relative);
+                    AnimationBehavior.SetSourceUri(bg, uri2);
+                    break;
+                case "Drizzle":
+                    Uri uri3 = new Uri("/Images/rain.gif", UriKind.Relative);
+                    AnimationBehavior.SetSourceUri(bg, uri3);
+                    break;
+                case "Thunderstorm":
+                    Uri uri4 = new Uri("/Images/thunderstorm.gif", UriKind.Relative);
+                    AnimationBehavior.SetSourceUri(bg, uri4);
+                    break;
+            }
         }
 
         int ToC(int f) 
@@ -180,6 +207,7 @@ namespace WeatherApp
                         reader.Read();
                         weather.Content = (string)reader.Value;
                         mainSet = true;
+                        SetBackground((string)reader.Value);
                     }
                     if (reader.Value.Equals("feels_like")) 
                     {

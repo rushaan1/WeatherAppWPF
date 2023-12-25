@@ -7,20 +7,28 @@
         xmlns:local="clr-namespace:WeatherApp"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Border Background="SkyBlue">
+    <Border>
+        <Border.Background>
+            <VisualBrush>
+                <VisualBrush.Visual>
+                    <Image x:Name="bg" gif:AnimationBehavior.SourceUri=""/>
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </Border.Background>
         <Viewbox>
             <Canvas Width="843" Height="450">
+                <Rectangle Opacity="0.7" RadiusX="15" RadiusY="15" Fill="Snow" Width="235" Height="145" Canvas.Top="223"/>
                 <Label Name="temperature" FontSize="79" Canvas.Left="451" Canvas.Top="90">27°C</Label>
                 <Label Name="feelslike" FontSize="25" Canvas.Left="459" Canvas.Top="181">Feels Like</Label>
                 <Label Name="min" FontSize="15" Canvas.Left="365" Canvas.Top="174" RenderTransformOrigin="0.51,0.475">Min 103°C</Label>
                 <Label Name="max" FontSize="15" Canvas.Left="365" Canvas.Top="119">Max 103°C</Label>
 
-                <Label FontSize="20" Name="humidity" Canvas.Left="10" Canvas.Top="237">Humidity</Label>
-                <Label FontSize="20" Name="visibility" Canvas.Left="10" Canvas.Top="274">Visbility</Label>
-                <Label FontSize="20" Name="presssure" Canvas.Left="10" Canvas.Top="308">Air Pressure</Label>
-                <Label FontSize="20" Name="wspeed" Canvas.Left="10" Canvas.Top="345">Wind Speed</Label>
+                <Label FontSize="20" Name="humidity" Canvas.Left="10" Canvas.Top="223">Humidity</Label>
+                <Label FontSize="20" Name="visibility" Canvas.Left="10" Canvas.Top="260">Visbility</Label>
+                <Label FontSize="20" Name="presssure" Canvas.Left="10" Canvas.Top="294">Air Pressure</Label>
+                <Label FontSize="20" Name="wspeed" Canvas.Left="10" Canvas.Top="331">Wind Speed</Label>
 
-                <Label Name="weather" FontSize="47" Canvas.Left="226" Canvas.Top="351" RenderTransformOrigin="0.483,0.514">Thunderstorm</Label>
+                <Label Name="weather" FontSize="47" Canvas.Left="235" Canvas.Top="350" RenderTransformOrigin="0.483,0.514">Thunderstorm</Label>
 
                 <Rectangle Opacity="0.5" Fill="Snow" RadiusX="10" RadiusY="30" Width="112" Height="27" Canvas.Left="358" Canvas.Top="10"></Rectangle>
                 <Rectangle x:Name="snowOverlay" Opacity="0.8" Fill="Snow" RadiusX="10" RadiusY="30" Width="60" Height="27" Canvas.Left="358" Canvas.Top="10"></Rectangle>
