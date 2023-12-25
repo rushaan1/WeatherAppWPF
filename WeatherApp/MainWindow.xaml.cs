@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Threading;
 using XamlAnimatedGif;
+using System.Collections;
 
 namespace WeatherApp
 {
@@ -34,12 +35,28 @@ namespace WeatherApp
         private int currentTemp;
         private int feelsLike;
         private bool refreshing = false;
+        private int searchItems = 0;
+        private List<string> cities = new List<string>();
+        private List<string> countries = new List<string>();
+        private List<Button> searchButtons = new List<Button>();
+
         public MainWindow()
         {
             InitializeComponent();
             watcher = new GeoCoordinateWatcher(GeoPositionAccuracy.Default);
             watcher.PositionChanged += SettingWeatherData;
             watcher.TryStart(false, TimeSpan.FromSeconds(3));
+
+            using (var reader = new StreamReader(@"C:\Users\rusha\source\repos\WeatherApp\WeatherApp\Files\cities_list.csv"))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    cities.Add(values[0]);
+                    countries.Add(values[3]);
+                }
+            }
             
         }
 
@@ -71,6 +88,88 @@ namespace WeatherApp
                 value = ToF(celsius);
             }
             return value;
+        }
+
+        void AddButton(string text) 
+        {
+            
+            Button btn = new Button() { Content = text }; 
+            btn.Click += SearchButtonClick;
+            btn.Height = 21;
+            btn.Width = 153;
+            btn.Background = Brushes.Snow;
+            mainCanvas.Children.Add(btn);
+            searchButtons.Add(btn);
+            Canvas.SetTop(btn, 69 + (21*searchItems));
+            Canvas.SetLeft(btn, 643);
+            searchItems++;
+        }
+
+        void RemoveAllSearchButtons() 
+        {
+            foreach (Button btn in searchButtons.ToList()) 
+            {
+                mainCanvas.Children.Remove(btn);
+                searchButtons.Remove(btn); 
+                searchItems--;
+            }
+        }
+
+        private void SearchButtonClick(object sender, RoutedEventArgs e) 
+        {
+            Trace.WriteLine("Working");
+        }
+
+        private void Search(object sender, RoutedEventArgs e) 
+        {
+            RemoveAllSearchButtons();
+
+            string searchText = (sender as TextBox).Text;
+            List<string> matchingKeywords = new List<string>();
+
+            if (searchText == "") 
+            {
+                return;
+            }
+
+            for (int i = 0; i < cities.Count; i++) 
+            {
+                if (cities[i].ToLower().Contains(searchText.ToLower()))
+                {
+                    matchingKeywords.Add(cities[i]);
+                    //Trace.WriteLine(cities[i]);
+                }
+                else if (countries[i].ToLower().Contains(searchText.ToLower()))
+                {
+                    matchingKeywords.Add(countries[i]);
+                    //Trace.WriteLine(countries[i]);
+                }
+            }
+
+            int mkCount = 5;
+            if (matchingKeywords.Count < 5) 
+            {
+                mkCount = matchingKeywords.Count;
+            }
+
+            for (int i = 0; i < mkCount; i++) 
+            {
+                for (int j = 0; j < cities.Count; j++)
+                {
+                    if (cities[j].Contains(matchingKeywords[i]))
+                    {
+                        Trace.WriteLine(countries[j]);
+                        AddButton($"{cities[j]}, {countries[j]}");
+                        break; 
+                    }
+                    else if (countries[j].Contains(matchingKeywords[i]))
+                    {
+                        Trace.WriteLine(countries[j]);
+                        AddButton($"{cities[j]}, {countries[j]}");
+                        break;
+                    }
+                }
+            }
         }
 
         void SetBackground(string weather) 
