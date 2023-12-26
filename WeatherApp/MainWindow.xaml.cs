@@ -63,7 +63,7 @@ namespace WeatherApp
                     countries.Add(values[3]);
                 }
             }
-            
+
         }
 
         string GetOpenWeatherUrl(double lat, double lon, string unit)
@@ -86,51 +86,51 @@ namespace WeatherApp
             }
         }
 
-        int convert(int celsius) 
+        int convert(int celsius)
         {
             int value = celsius;
-            if (tempUnit == 'F') 
+            if (tempUnit == 'F')
             {
                 value = ToF(celsius);
             }
             return value;
         }
 
-        void AddButton(string text) 
+        void AddButton(string text)
         {
-            
-            Button btn = new Button() { Content = text }; 
+
+            Button btn = new Button() { Content = text };
             btn.Click += SearchButtonClick;
             btn.Height = 37;
             btn.Width = 274;
             btn.Background = Brushes.Snow;
             btn.FontSize = 26;
-            if (text.Length > 18) 
+            if (text.Length > 18)
             {
                 btn.FontSize = 16;
             }
-            if (text.Length > 28) 
+            if (text.Length > 28)
             {
                 btn.FontSize = 13;
             }
             mainCanvas.Children.Add(btn);
             searchButtons.Add(btn);
-            Canvas.SetTop(btn, 66 + (37*searchItems));
+            Canvas.SetTop(btn, 66 + (37 * searchItems));
             Canvas.SetLeft(btn, 559);
             searchItems++;
         }
 
-        void RemoveAllSearchButtons() 
+        void RemoveAllSearchButtons()
         {
-            foreach (Button btn in searchButtons.ToList()) 
+            foreach (Button btn in searchButtons.ToList())
             {
                 mainCanvas.Children.Remove(btn);
-                searchButtons.Remove(btn); 
+                searchButtons.Remove(btn);
                 searchItems--;
             }
         }
 
-        private void SearchButtonClick(object sender, RoutedEventArgs e) 
+        private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
             SetWeatherDataCity((e.Source as Button).Content.ToString());
             location.Content = (e.Source as Button).Content.ToString();
@@ -138,18 +138,19 @@ namespace WeatherApp
             SetCueBannerBackground(searchBar, "Search City");
         }
 
-        private void md(object sender, MouseButtonEventArgs e) 
+        private void md(object sender, MouseButtonEventArgs e)
         {
             int x = (int)Mouse.GetPosition(mainCanvas as IInputElement).X;
             int y = (int)Mouse.GetPosition(mainCanvas as IInputElement).Y;
             Trace.WriteLine("X: " + x + "\nY:" + y);
 
-            if (x >= 560 && y <= 67 + (37 * (1 + searchItems)))
+            if (x >= 597 && y <= 67 + (37 * (searchItems)) && y>=21 && x <=835)
             {
                 Trace.WriteLine("In the zone!");
+
                 SearchGotFocus();
             }
-            else 
+            else
             {
                 SearchLostFocus();
             }
@@ -163,7 +164,7 @@ namespace WeatherApp
             searchBar.Text = "";
         }
 
-        private void SearchGotFocusE(object sender, RoutedEventArgs e) 
+        private void SearchGotFocusE(object sender, RoutedEventArgs e)
         {
             SearchGotFocus();
         }
@@ -183,9 +184,9 @@ namespace WeatherApp
             {
                 sc = false;
             }
-            else 
+            else
             {
-                sc = true; 
+                sc = true;
             }
             // Create the VisualBrush with a Label containing the cue banner
             VisualBrush cueBannerBrush = new VisualBrush
@@ -207,9 +208,9 @@ namespace WeatherApp
         }
 
 
-        private void Search(object sender, RoutedEventArgs e) 
+        private void Search(object sender, RoutedEventArgs e)
         {
-            if (sc) 
+            if (sc)
             {
                 searchBar.Text = "";
             }
@@ -224,12 +225,12 @@ namespace WeatherApp
                 //sc.Visibility = Visibility.Visible;
                 return;
             }
-            else 
+            else
             {
                 //sc.Visibility = Visibility.Hidden;
             }
 
-            for (int i = 0; i < cities.Count; i++) 
+            for (int i = 0; i < cities.Count; i++)
             {
                 if (cities[i].ToLower().Contains(searchText.ToLower()))
                 {
@@ -244,33 +245,33 @@ namespace WeatherApp
             }
 
             int mkCount = 5;
-            if (matchingKeywords.Count < 5) 
+            if (matchingKeywords.Count < 5)
             {
                 mkCount = matchingKeywords.Count;
             }
 
-            for (int i = 0; i < mkCount; i++) 
+            for (int i = 0; i < mkCount; i++)
             {
                 for (int j = 0; j < cities.Count; j++)
                 {
                     if (cities[j].Contains(matchingKeywords[i]))
                     {
                         AddButton($"{cities[j]}, {countries[j]}");
-                        break; 
+                        break;
                     }
                     else if (countries[j].Contains(matchingKeywords[i]))
                     {
                         foreach (string city in cities)
-                                {
-                                    if (countries[cities.IndexOf(city)] == countries[j]) 
-                                    {
+                        {
+                            if (countries[cities.IndexOf(city)] == countries[j])
+                            {
                                 matchingKeywords.RemoveAll((string item) => { return item == countries[j]; });
-                                if (matchingKeywords.Contains(city) == false) 
+                                if (matchingKeywords.Contains(city) == false)
                                 {
                                     matchingKeywords.Add(city);
                                 }
-                                    }
-                                }
+                            }
+                        }
                         AddButton($"{cities[j]}, {countries[j]}");
                         break;
                     }
@@ -278,7 +279,7 @@ namespace WeatherApp
             }
         }
 
-        void SetBackground(string weather) 
+        void SetBackground(string weather)
         {
             switch (weather)
             {
@@ -305,7 +306,7 @@ namespace WeatherApp
             }
         }
 
-        int ToC(int f) 
+        int ToC(int f)
         {
             double c = (f - 32) * 5 / 9;
             return Convert.ToInt32(c);
@@ -314,26 +315,26 @@ namespace WeatherApp
         int ToF(int c)
         {
             double f = (c * 9.0) / 5.0 + 32.0;
-            return Convert.ToInt32(f); 
+            return Convert.ToInt32(f);
         }
 
-        private void Refresh(object sender, RoutedEventArgs e) 
+        private void Refresh(object sender, RoutedEventArgs e)
         {
-            if (refreshing) 
+            if (refreshing)
             {
                 return;
             }
             refreshing = true;
-            mre = new ManualResetEvent(false); 
+            mre = new ManualResetEvent(false);
 
             Thread thread;
 
             if (city != "")
             {
                 SetWeatherDataCity(this.city);
-                thread = new Thread(() => { RefreshThread(false);});
+                thread = new Thread(() => { RefreshThread(false); });
             }
-            else 
+            else
             {
                 watcher.PositionChanged += SettingWeatherData;
                 thread = new Thread(() => { RefreshThread(true); });
@@ -341,7 +342,7 @@ namespace WeatherApp
             thread.Start();
         }
 
-        private void RefreshThread(bool manualWait) 
+        private void RefreshThread(bool manualWait)
         {
             this.Dispatcher.Invoke(() =>
             {
@@ -352,15 +353,15 @@ namespace WeatherApp
             {
                 Thread.Sleep(5000);
             }
-            else 
+            else
             {
                 Trace.WriteLine("WAITING FOR MRE");
-                mre.WaitOne();  
+                mre.WaitOne();
             }
             this.Dispatcher.Invoke(() =>
             {
                 refreshIcon.Visibility = Visibility.Visible;
-                refreshGif.Visibility = Visibility.Hidden; 
+                refreshGif.Visibility = Visibility.Hidden;
             });
             refreshing = false;
         }
@@ -412,10 +413,10 @@ namespace WeatherApp
             {
                 if (reader.Value != null)
                 {
-                    if (reader.Value.Equals("lat") && !latlongset) 
+                    if (reader.Value.Equals("lat") && !latlongset)
                     {
                         reader.Read();
-                        latlongs[0] = (double) reader.Value;
+                        latlongs[0] = (double)reader.Value;
                     }
                     if (reader.Value.Equals("lon") && !latlongset)
                     {
@@ -428,11 +429,11 @@ namespace WeatherApp
             return latlongs;
         }
 
-        private void SetWeatherDataCity(string cityName) 
+        private void SetWeatherDataCity(string cityName)
         {
             double[] latlongss = latlong(cityName);
             string Response = Get(GetOpenWeatherUrl(latlongss[0], latlongss[1], "metric"));
-            Trace.WriteLine(Response); 
+            Trace.WriteLine(Response);
             JsonTextReader reader = new JsonTextReader(new StringReader(Response));
             bool mainSet = false;
             while (reader.Read())
@@ -533,26 +534,26 @@ namespace WeatherApp
                         currentTemp = convert(tempInt);
                         this.Dispatcher.Invoke(() => { temperature.Content = convert(tempInt) + "°C"; });
                     }
-                    if (reader.Value.Equals("main") && !mainSet) 
+                    if (reader.Value.Equals("main") && !mainSet)
                     {
                         reader.Read();
                         weather.Content = (string)reader.Value;
                         mainSet = true;
                         SetBackground((string)reader.Value);
                     }
-                    if (reader.Value.Equals("feels_like")) 
+                    if (reader.Value.Equals("feels_like"))
                     {
                         reader.Read();
                         double fl = (double)reader.Value;
                         this.feelsLike = convert(Convert.ToInt32(fl));
-                        feelslike.Content = "Feels Like "+convert(Convert.ToInt32(fl)) + "°C";
+                        feelslike.Content = "Feels Like " + convert(Convert.ToInt32(fl)) + "°C";
                     }
                     if (reader.Value.Equals("temp_min"))
                     {
                         reader.Read();
                         double mint = (double)reader.Value;
-                        this.minTemp = convert(Convert.ToInt32(mint)); 
-                        min.Content = "Min " + convert(Convert.ToInt32(mint)) + "°C"; 
+                        this.minTemp = convert(Convert.ToInt32(mint));
+                        min.Content = "Min " + convert(Convert.ToInt32(mint)) + "°C";
                     }
                     if (reader.Value.Equals("temp_max"))
                     {
@@ -563,7 +564,7 @@ namespace WeatherApp
                     }
 
 
-                    if (reader.Value.Equals("pressure")) 
+                    if (reader.Value.Equals("pressure"))
                     {
                         reader.Read();
                         Trace.WriteLine(reader.Value);
@@ -574,7 +575,7 @@ namespace WeatherApp
                     {
                         reader.Read();
                         //int v = (int)reader.Value;
-                        humidity.Content = "Humidity: " + reader.Value +"%";
+                        humidity.Content = "Humidity: " + reader.Value + "%";
                     }
                     if (reader.Value.Equals("visibility"))
                     {
@@ -586,7 +587,7 @@ namespace WeatherApp
                     {
                         reader.Read();
                         //double v = (double)reader.Value;
-                        wspeed.Content = "Wind Speed: " + reader.Value +"m/s";
+                        wspeed.Content = "Wind Speed: " + reader.Value + "m/s";
                     }
                     if (reader.Value.Equals("name"))
                     {
@@ -611,27 +612,27 @@ namespace WeatherApp
             overlay2.IsEnabled = false;
         }
 
-        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void mc(object sender, RoutedEventArgs e)
         {
-            if (searchBar.Text == "" || searchBar.Text == textBoxContentLeft) 
-            {
-                return;
-            }
+            //if (searchBar.Text == "" )
+            //{
+            //    return;
+            //}
             searchBar.Text = "";
             textBoxContentLeft = "";
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (this.city == "") 
+            if (this.city == "")
             {
                 return;
             }
             watcher.PositionChanged += SettingWeatherData;
-            mre = new ManualResetEvent(false); 
+            mre = new ManualResetEvent(false);
             Thread thread = new Thread(() => { RefreshThread(true); });
             thread.Start();
-            searchBar.IsReadOnly = true; 
+            searchBar.IsReadOnly = true;
         }
     }
 }
