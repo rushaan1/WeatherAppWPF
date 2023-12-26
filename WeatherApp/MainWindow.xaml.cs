@@ -605,6 +605,10 @@ namespace WeatherApp
             watcher.PositionChanged -= SettingWeatherData;
             searchBar.IsReadOnly = false;
             mre.Set();
+            overlay1.Visibility = Visibility.Hidden;
+            overlay2.Visibility = Visibility.Hidden;
+            overlay1.IsEnabled = false;
+            overlay2.IsEnabled = false;
         }
 
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)

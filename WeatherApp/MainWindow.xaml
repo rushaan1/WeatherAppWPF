@@ -19,10 +19,17 @@
             </VisualBrush>
         </Border.Background>
         <Viewbox>
+
             <Canvas x:Name="mainCanvas" Width="843" Height="450">
-                <Button Click="Button_Click" Background="Transparent" Canvas.Left="507" Canvas.Top="21" Height="46" Width="48">
+                <Button ToolTip="Set to current location" Click="Button_Click" Background="Transparent" Canvas.Left="507" Canvas.Top="21" Height="46" Width="48">
                     <Image Source="/Images/geo.png" Height="59" Width="33"/>
                 </Button>
+
+
+                <Rectangle Visibility="Visible" IsEnabled="True" x:Name="overlay1" Panel.ZIndex="1"  Width="843" Height="450" Fill="Snow" d:IsHidden="True"></Rectangle>
+                <Image Visibility="Visible" IsEnabled="True" Panel.ZIndex="2" x:Name="overlay2" Width="100" Height="100" gif:AnimationBehavior.SourceUri="/Images/loading.gif" Canvas.Left="370" Canvas.Top="160" d:IsHidden="True" />
+
+
                 <Image Source="/Images/location.png" Height="42" Width="24" Canvas.Top="69" RenderTransformOrigin="0.849,0.428" Canvas.Left="13"/>
                 <Label FontSize="20" Name="location" Canvas.Left="37" Canvas.Top="72">City, Country</Label>
                 <Image MouseDown="Image_MouseDown" Source="/Images/redcross.png" Height="16" Width="16" Canvas.Left="818" Canvas.Top="5"></Image>
