@@ -39,10 +39,16 @@ namespace WeatherApp
         private List<string> cities = new List<string>();
         private List<string> countries = new List<string>();
         private List<Button> searchButtons = new List<Button>();
+        private string city = "";
+        private string textBoxContentLeft = "";
+        private bool sc = true;
+        private static ManualResetEvent mre = new ManualResetEvent(false);
+
 
         public MainWindow()
         {
             InitializeComponent();
+            SetCueBannerBackground(searchBar, "Search City");
             watcher = new GeoCoordinateWatcher(GeoPositionAccuracy.Default);
             watcher.PositionChanged += SettingWeatherData;
             watcher.TryStart(false, TimeSpan.FromSeconds(3));
@@ -127,11 +133,86 @@ namespace WeatherApp
         private void SearchButtonClick(object sender, RoutedEventArgs e) 
         {
             SetWeatherDataCity((e.Source as Button).Content.ToString());
+            location.Content = (e.Source as Button).Content.ToString();
+            searchBar.Text = "";
+            SetCueBannerBackground(searchBar, "Search City");
+        }
+
+        private void md(object sender, MouseButtonEventArgs e) 
+        {
+            int x = (int)Mouse.GetPosition(mainCanvas as IInputElement).X;
+            int y = (int)Mouse.GetPosition(mainCanvas as IInputElement).Y;
+            Trace.WriteLine("X: " + x + "\nY:" + y);
+
+            if (x >= 560 && y <= 67 + (37 * (1 + searchItems)))
+            {
+                Trace.WriteLine("In the zone!");
+                SearchGotFocus();
+            }
+            else 
+            {
+                SearchLostFocus();
+            }
+        }
+
+        private void SearchLostFocus()
+        {
+            SetCueBannerBackground(searchBar, "Search City");
+            searchBar.CaretBrush = Brushes.Transparent;
+            textBoxContentLeft = searchBar.Text;
             searchBar.Text = "";
         }
 
+        private void SearchGotFocusE(object sender, RoutedEventArgs e) 
+        {
+            SearchGotFocus();
+        }
+
+        private void SearchGotFocus()
+        {
+            SetCueBannerBackground(searchBar, "");
+            searchBar.CaretBrush = Brushes.Black;
+            if (textBoxContentLeft == "") { return; }
+            searchBar.Text = textBoxContentLeft;
+            textBoxContentLeft = "";
+        }
+
+        private void SetCueBannerBackground(TextBox textBox, string content)
+        {
+            if (content == "")
+            {
+                sc = false;
+            }
+            else 
+            {
+                sc = true; 
+            }
+            // Create the VisualBrush with a Label containing the cue banner
+            VisualBrush cueBannerBrush = new VisualBrush
+            {
+                AlignmentX = AlignmentX.Left,
+                AlignmentY = AlignmentY.Center,
+                Stretch = Stretch.None,
+                Visual = new Label
+                {
+                    Background = Brushes.Transparent,
+                    FontSize = 30,
+                    Content = content,
+                    Foreground = Brushes.LightGray
+                }
+            };
+
+            // Set the VisualBrush as the background for the TextBox
+            textBox.Background = cueBannerBrush;
+        }
+
+
         private void Search(object sender, RoutedEventArgs e) 
         {
+            if (sc) 
+            {
+                searchBar.Text = "";
+            }
             RemoveAllSearchButtons();
 
             string searchText = (sender as TextBox).Text;
@@ -139,6 +220,7 @@ namespace WeatherApp
 
             if (searchText == "")
             {
+                //((UIElement)sender).RaiseEvent(new RoutedEventArgs(LostFocusEvent));
                 //sc.Visibility = Visibility.Visible;
                 return;
             }
@@ -242,20 +324,39 @@ namespace WeatherApp
                 return;
             }
             refreshing = true;
-            watcher.PositionChanged += SettingWeatherData;
+            mre = new ManualResetEvent(false); 
 
-            Thread thread = new Thread(RefreshThread);
+            Thread thread;
+
+            if (city != "")
+            {
+                SetWeatherDataCity(this.city);
+                thread = new Thread(() => { RefreshThread(false);});
+            }
+            else 
+            {
+                watcher.PositionChanged += SettingWeatherData;
+                thread = new Thread(() => { RefreshThread(true); });
+            }
             thread.Start();
         }
 
-        private void RefreshThread() 
+        private void RefreshThread(bool manualWait) 
         {
             this.Dispatcher.Invoke(() =>
             {
                 refreshIcon.Visibility = Visibility.Hidden;
                 refreshGif.Visibility = Visibility.Visible;
             });
-            Thread.Sleep(5000);
+            if (!manualWait)
+            {
+                Thread.Sleep(5000);
+            }
+            else 
+            {
+                Trace.WriteLine("WAITING FOR MRE");
+                mre.WaitOne();  
+            }
             this.Dispatcher.Invoke(() =>
             {
                 refreshIcon.Visibility = Visibility.Visible;
@@ -403,6 +504,7 @@ namespace WeatherApp
                     }
                 }
             }
+            this.city = cityName;
         }
 
         private void SettingWeatherData(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
@@ -417,6 +519,8 @@ namespace WeatherApp
             Trace.WriteLine(Response);
             JsonTextReader reader = new JsonTextReader(new StringReader(Response));
             bool mainSet = false;
+            string countrycode = "";
+            string cityy = "";
             while (reader.Read())
             {
                 if (reader.Value != null)
@@ -484,9 +588,46 @@ namespace WeatherApp
                         //double v = (double)reader.Value;
                         wspeed.Content = "Wind Speed: " + reader.Value +"m/s";
                     }
+                    if (reader.Value.Equals("name"))
+                    {
+                        reader.Read();
+                        cityy = "" + reader.Value;
+                    }
+                    if (reader.Value.Equals("country"))
+                    {
+                        reader.Read();
+                        countrycode = "" + reader.Value;
+                    }
                 }
             }
+            this.city = "";
+            location.Content = cityy + ", " + countrycode;
             watcher.PositionChanged -= SettingWeatherData;
+            searchBar.IsReadOnly = false;
+            mre.Set();
+        }
+
+        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (searchBar.Text == "" || searchBar.Text == textBoxContentLeft) 
+            {
+                return;
+            }
+            searchBar.Text = "";
+            textBoxContentLeft = "";
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.city == "") 
+            {
+                return;
+            }
+            watcher.PositionChanged += SettingWeatherData;
+            mre = new ManualResetEvent(false); 
+            Thread thread = new Thread(() => { RefreshThread(true); });
+            thread.Start();
+            searchBar.IsReadOnly = true; 
         }
     }
 }

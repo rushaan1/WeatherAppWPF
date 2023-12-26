@@ -95,6 +95,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MouseCapture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -138,6 +139,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\searchIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\redcross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\geo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\location.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
