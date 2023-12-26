@@ -53,7 +53,7 @@ namespace WeatherApp
             watcher.PositionChanged += SettingWeatherData;
             watcher.TryStart(false, TimeSpan.FromSeconds(3));
 
-            using (var reader = new StreamReader(@"C:\Users\rusha\source\repos\WeatherApp\WeatherApp\Files\cities_list.csv"))
+            using (var reader = new StreamReader(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files", "cities_list.csv")))
             {
                 while (!reader.EndOfStream)
                 {

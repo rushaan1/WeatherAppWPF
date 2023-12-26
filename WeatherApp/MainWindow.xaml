@@ -6,7 +6,8 @@
         xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         xmlns:local="clr-namespace:WeatherApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" PreviewMouseDown="md">
+        Icon="/Images/favicon.ico" 
+        Title="WeatherApp" Height="450" Width="800" PreviewMouseDown="md">
     <Window.Resources>
 
     </Window.Resources>

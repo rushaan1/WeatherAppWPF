@@ -113,7 +113,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Files\cities_list.csv" />
+    <None Include="Files\cities_list.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Files\cities_list.xlsx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -148,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\location.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\favicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
