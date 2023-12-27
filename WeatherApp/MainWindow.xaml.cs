@@ -70,7 +70,7 @@ namespace WeatherApp
         {
             string api_key = "bc0dc3b2b3b5fca1427a621c5cd66b44";
             string url = $"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units={unit}";
-            return url;
+            return url;                 
         }
 
         string Get(string uri)
@@ -284,7 +284,7 @@ namespace WeatherApp
             switch (weather)
             {
                 case "Clear":
-                    Uri uri = new Uri("/Images/clearsky.gif", UriKind.Relative);
+                    Uri uri = new Uri("/Images/clearskylooop.gif", UriKind.Relative);
                     AnimationBehavior.SetSourceUri(bg, uri);
                     break;
                 case "Snow":
